@@ -19,7 +19,14 @@ async def server_message_event_to_specific_client(id=None):
     client_id = clients[id]
     event_data = {
             'time': datetime.datetime.utcnow().isoformat(),
-            'data': 'data is comming!'
+            'phase': 'launch'
+            'url' 'url',
+            'xpath_sequence': ["séquence une xppath", "séquence deux xpath", "séquence trois xpath"],
+            'data': 'data is comming!',
+            'device_id' : id,
+            'city': 'city',
+            'price_limit': 'price_limit',
+            'ban words' : 'ban words'
         }
         
         # Convert the event data to a JSON string to send
