@@ -4,6 +4,7 @@ from urllib.parse import urlparse, parse_qs
 from handle_error import IsId
 import datetime
 import json
+import hupper
 clients = {}  # Dictionnaire pour stocker les connexions client
 
 
@@ -68,9 +69,19 @@ async def handle_message(websocket, path):
 
    
 
-async def main():
+print("ok")
+async def launch():
+    
     async with websockets.serve(handle_message, "localhost", 8765):
         print("Serveur démarré à ws://localhost:8765")
         await asyncio.Future()  # Exécute le serveur indéfiniment
 
-asyncio.run(main())
+def main():
+    # Initialiser le reloader
+# reloader = hupper.start_reloader('queu_manager.main')
+    reloader = hupper.start_reloader('api.main')
+
+    asyncio.run(launch())
+
+if __name__ == "__main__":
+    main()
