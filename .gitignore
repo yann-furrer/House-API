@@ -10,3 +10,4 @@ emit_py.py
 web2test.py
 __pycache__
 websocket_api.py
+.env
