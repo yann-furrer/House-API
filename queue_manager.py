@@ -1,5 +1,5 @@
 # queue_manager.py
-
+from controller import controller
 import asyncio
 import json
 import time
@@ -9,7 +9,8 @@ async def consumer_handler(queue: asyncio.Queue):
         time.sleep(1)
         # Attendez un élément de la queue
         message = await queue.get()
-
+        isSucess = controller()
+        print(isSucess)
         print(f"Message consommé : {message}")
         # Traitez le message ici
         print(f"Message consommé : {message}")
