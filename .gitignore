@@ -11,3 +11,7 @@ web2test.py
 __pycache__
 websocket_api.py
 .env
+api_test.py
+
+bdd/__init__.py
+controller/__init__.py

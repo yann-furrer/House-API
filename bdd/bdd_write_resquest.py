@@ -1,4 +1,4 @@
-from bdd_connector import conn, cur
+from bdd.bdd_connector import conn, cur
 from datetime import datetime
 
 #Creation of class BDDWriteRequest
@@ -14,16 +14,18 @@ class BDDWriteRequest:
         try :
             self.cursor.execute(f"INSERT INTO monitoring.scrapper_log (add_date, model_id, success, nb_data, website) VALUES ({add_date}, {model_id}, {success}, {nb_data}, {website});")
             conn.commit()
+            return True
         except Exception as e:
             print(e)
             print("Error in INSERT MscrapperLog")
+            return False
 
 
     #request monitoring.scrapper_device
     def AddMscrapperDevice(self, add_date, model_id, is_connected=False ):
         #ajouter un check
         try:
-            self.cursor.execute(f"INSERT INTO monitoring.scrapper_device (add_date, model_id, is_connected) VALUES ({add_date}, {model_id}, {is_connected});")
+            self.cursor.execute(f"INSERT INTO monitoring.scrapper_device (add_date, model_id, is_connected) VALUES ({add_date}, '{model_id}', {is_connected});")
             conn.commit()
         except Exception as e:
             print(e)
@@ -31,14 +33,14 @@ class BDDWriteRequest:
 
 
     # modify a state of is connected on monitoring.scrapper_device
-    def isConnectedMscrapperDevice(self, add_date, model_id, is_connected=False ):
+    def isConnectedMscrapperDevice(self, model_id, is_connected=False ):
         #ajouter un check
         try:
-            self.cursor.execute(f"INSERT INTO monitoring.scrapper_device (add_date, model_id, is_connected) VALUES ({add_date}, {model_id}, {is_connected});")
+            self.cursor.execute(f"UPDATE monitoring.scrapper_device SET add_date = CURRENT_TIMESTAMP, is_connected = {is_connected} WHERE model_id = '{model_id}';;")
             conn.commit()
         except Exception as e:
             print(e)
-            print("Error in INSERT MscrapperLog")
+            print("Error in INSERT isConnectedMscrapperDevice")
 
 
     # modify state and to an specific city
@@ -52,3 +54,18 @@ class BDDWriteRequest:
         except Exception as e:
             print(e)
             print("Error in UPDATE UpdateCityScityScrapping")
+
+
+    # pdate field id_scrapper to set the scraper_id 
+    def UpdateScrapperPlanning(self, tuple_values):
+        # try :
+            update_query = f"""
+        UPDATE monitoring.city_scraping
+        SET id_scraper = %s
+        WHERE id = %s;
+        """
+            self.cursor.executemany(update_query, tuple_values)
+            conn.commit()
+        # except Exception as e:
+        #     print(e)
+        #     print("Error in UPDATE UpdateScrapperPlanning")

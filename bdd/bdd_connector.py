@@ -31,8 +31,8 @@ try:
     # print(db_version)
 
     # # Close the cursor and connection
-    cur.close()
-    conn.close()
+    #cur.close()
+    #conn.close()
 
 except psycopg2.Error as e:
     print(f"Unable to connect to the database: {e}")

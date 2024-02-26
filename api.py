@@ -14,36 +14,6 @@ clients = {}  # Dictionnaire pour stocker les connexions client
 queue = asyncio.Queue()  # Initialisation de la queue pour stocker les messages
 
 
-async def close_connection_to_specific_client(id):
-    client_websocket = clients[id]
-    await client_websocket.send(f"Fermeture de la connexion du client ${id}")
-    await client_websocket.close()
-    del clients[id]
-
-
-async def server_message_event_to_specific_client(id=None):
-    client_id = clients[id]
-    event_data = {
-            'type': 'emit',
-            'time': datetime.datetime.utcnow().isoformat(),
-            'phase': 'launch'
-            'url' 'url',
-            'xpath_sequence': ["séquence une xppath", "séquence deux xpath", "séquence trois xpath"],
-            'data': 'data is comming!',
-            'device_id' : id,
-            'city': 'city',
-            'price_limit': 'price_limit',
-            'ban words' : 'ban words'
-        }
-        
-        # Convert the event data to a JSON string to send
-    event_message = json.dumps(event_data)
-
-    # dans ce cas client_id est un websocket
-    await client_id.send(event_message)
-
-
-
 async def handle_message(websocket, path):
     
 
@@ -73,8 +43,10 @@ async def handle_message(websocket, path):
                 print("queue : ", queue.qsize())
                 await websocket.send(f"Message reçu : {message}")
                 await producer_handler(message, queue)
-    except websockets.exceptions.ConnectionClosed:
+    except websockets.exceptions.ConnectionClosed as e:
+            print(e)
             print("La connexion a été fermée par le client.")
+    
   
 
 
@@ -83,7 +55,7 @@ async def handle_message(websocket, path):
 
 print("ok")
 async def launch():
-    asyncio.create_task(consumer_handler(queue))
+    asyncio.create_task(consumer_handler(queue, clients))
     print("Démarrage du module de queue")
     async with websockets.serve(handle_message, "localhost", 8765):
         print("Serveur démarré à ws://localhost:8765")
