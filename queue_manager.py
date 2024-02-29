@@ -1,5 +1,5 @@
 # Description: Ce fichier contient les fonctions qui permettent de gérer la queue
-from controller.controller import controller
+#from controller.controller import controller
 import asyncio
 import json
 import time
@@ -27,14 +27,14 @@ bbd_write_request = BDDWriteRequest(conn, cur)
 from websocket_management import server_message_event_to_specific_client, close_connection_to_specific_client
 
 
-# le consomauteur fait office de controller
+# le consommateur gérè l'ensemble des evenements sauf le depart et la planning
 async def consumer_handler(queue: asyncio.Queue, client_webscocket=None):
 
     while True:
      
         # Attendez un élément de la queue
         message = await queue.get()
-        controller(message)
+
 
         match message:
             case {'type': 'ready'}:
@@ -55,7 +55,7 @@ async def consumer_handler(queue: asyncio.Queue, client_webscocket=None):
                 print("message['type'] == 'start_scrapping'")
 
 
-            case {'type': 'scrapping'}:
+            case {'type': 'sleep'}:
 
                 print("message['type'] == 'disconnect'")
             case _:

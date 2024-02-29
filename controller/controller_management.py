@@ -1,11 +1,15 @@
 
 from itertools import cycle
 from random import shuffle
-
+from datetime import datetime
 import random
 from datetime import datetime, timedelta
 import os
 import sys
+
+
+
+
 # Ajouter le chemin du dossier bdd
 # chemin_bdd = os.path.join(os.path.dirname(__file__), 'bdd')
 # if chemin_bdd not in sys.path:
@@ -29,7 +33,7 @@ bdd_write_request = BDDWriteRequest(conn, cur)
 
 def clear_data_if_week_changed():
     # Obtenir le numéro de la semaine actuelle
-    current_week = datetime.datetime.now().isocalendar()[1]
+    current_week = datetime.now().isocalendar()[1]
     
     # Vérifier le week_number dans la table    
     result = bdd_read_request.GetWeekNumber()
@@ -45,34 +49,38 @@ def clear_data_if_week_changed():
 
 
 def assign_scrapers():
-   print(clear_data_if_week_changed())
-   if( clear_data_if_week_changed()):
+    #print(clear_data_if_week_changed())
+   #if( clear_data_if_week_changed()):
     #exemple of data device_connected_list [('test', False), ('postman', False)]
-    scrapers = list([item[0] for item in bdd_read_request.CheckMscrapperDevice()]) 
-    print(scrapers)
+    try :
+        scrapers = list([item[0] for item in bdd_read_request.CheckMscrapperDevice()]) 
+        print("assign scrapper",scrapers)
 
-    scraper_cycle = cycle(scrapers)
+        scraper_cycle = cycle(scrapers)
+        
+        # Récupérer les villes à scraper
+        cities = bdd_read_request.GetCityIdScrapping()
+        # Mélanger aléatoirement la liste des villes pour varier la distribution
+        shuffle(cities)
+
+        # Préparation de la liste des mises à jour
+        updates = []
+       
+        for city_id in cities:
+            scraper_id = next(scraper_cycle)
+            updates.append((scraper_id, city_id[0]))
+
+        bdd_write_request.UpdateScrapperPlanning(updates)
+        # Retiurne la liste des scrappers pour établir le planning
+        return scrapers
     
-    # Récupérer les villes à scraper
-    cities = bdd_read_request.GetCityIdScrapping()
-    
-    # Mélanger aléatoirement la liste des villes pour varier la distribution
-    shuffle(cities)
-
-    # Préparation de la liste des mises à jour
-    updates = []
-    for city_id in cities:
-        scraper_id = next(scraper_cycle)
-        updates.append((scraper_id, city_id[0]))
-
-    bdd_write_request.UpdateScrapperPlanning(updates)
+    except Exception as e:
+        print(e)
+        print("Aucun scrapper n'est connecté")
 
 
 
-
-
-
-def generer_horaires_aleatoires(ids:str, nb_time:int):
+def radom_schedule_handle(ids:str, nb_time:int):
     horaires_par_id = {}
     for id in ids:
         horaires = []
@@ -86,7 +94,7 @@ def generer_horaires_aleatoires(ids:str, nb_time:int):
             horaires.append(horaire.strftime("%Y-%m-%d %H:%M:%S"))
         horaires_par_id[id] = horaires
     return horaires_par_id
-
+print(radom_schedule_handle(["pc-1", "postman", "phone-2"], 5))
 def random_break():
  #défini un temps de pause aléatoire en seoconde
   return random.randint(5, 10)

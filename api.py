@@ -9,7 +9,7 @@ import json
 import hupper
 
 from queue_manager import consumer_handler, producer_handler
-
+from controller.controller import controller_e
 clients = {}  # Dictionnaire pour stocker les connexions client
 queue = asyncio.Queue()  # Initialisation de la queue pour stocker les messages
 
@@ -55,11 +55,18 @@ async def handle_message(websocket, path):
 
 print("ok")
 async def launch():
+
+    # Créer une tâche pour executer le controller qui à des threads non compatible avec asyncio
+    loop = asyncio.get_running_loop()
     asyncio.create_task(consumer_handler(queue, clients))
     print("Démarrage du module de queue")
+  
+
+    await loop.run_in_executor(None, controller_e, queue)
+    print("Démarrage du conotroller")
+    
     async with websockets.serve(handle_message, "localhost", 8765):
         print("Serveur démarré à ws://localhost:8765")
-        
         await asyncio.Future()  # Exécute le serveur indéfiniment
 
 def main():

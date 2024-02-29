@@ -15,7 +15,7 @@ class BDDReadRequest:
     # return in json all id of scrapper devices and if is connected or not
     def CheckMscrapperDevice(self):
         try :
-            self.cursor.execute(f"SELECT model_id,  is_connected FROM monitoring.scrapper_device;")
+            self.cursor.execute(f"SELECT model_id, is_connected FROM monitoring.scrapper_device ;")
            # print(self.cursor.fetchall()[ø])
             return self.cursor.fetchall()
         except Exception as e:
@@ -70,7 +70,7 @@ class BDDReadRequest:
     #return last 3 logs of every device from dynamic view in monitoring 
     def GetLastLogs(self):
         try :
-            self.cursor.execute(f"SELECT * FROM monitoring.scrapper_logs;")
+            self.cursor.execute(f"SELECT * FROM monitoring.scrapper_log;")
             #print(json.dumps(self.cursor.fetchall()))
             return json.dumps(self.cursor.fetchall())
         except Exception as e:
@@ -81,7 +81,7 @@ class BDDReadRequest:
     # Return all city's id to scrapping step from city_scrapping
     def GetCityIdScrapping(self):
        # try :
-            self.cursor.execute(f"SELECT id FROM monitoring.city_scraping;")
+            self.cursor.execute(f"SELECT id FROM monitoring.city_scraping WHERE state = 'TODO';")
             #print(json.dumps(self.cursor.fetchall()))
             #return json.dumps(self.cursor.fetchall())
             return self.cursor.fetchall()
