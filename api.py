@@ -63,7 +63,7 @@ async def launch():
   
 
     await loop.run_in_executor(None, controller_e, queue)
-    print("Démarrage du conotroller")
+   # print("Démarrage du conotroller")
     
     async with websockets.serve(handle_message, "localhost", 8765):
         print("Serveur démarré à ws://localhost:8765")

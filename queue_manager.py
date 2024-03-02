@@ -29,12 +29,12 @@ from websocket_management import server_message_event_to_specific_client, close_
 
 # le consommateur gérè l'ensemble des evenements sauf le depart et la planning
 async def consumer_handler(queue: asyncio.Queue, client_webscocket=None):
-
+    print("consumer_handler -------->>>>>")
     while True:
      
         # Attendez un élément de la queue
         message = await queue.get()
-
+        print("message consummer: ", message)
 
         match message:
             case {'type': 'ready'}:

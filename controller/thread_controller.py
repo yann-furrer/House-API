@@ -34,17 +34,19 @@ def periodical_thread(device_list : list):
 
 
 def event_trigger(device_planning : object, queue: asyncio.Queue):
-
+        print("event_trigger")
         while True:  # Boucle infinie pour vérifier continuellement
-            now = datetime.datetime.now()
+            now = datetime.now()
             for event_id, times in device_planning.items():
                 for time_str in times:
-                    time_obj = datetime.datetime.strptime(time_str, '%Y-%m-%d %H:%M:%S').replace(second=0, microsecond=0)
+                    time_obj = datetime.strptime(time_str, '%Y-%m-%d %H:%M:%S').replace(second=0, microsecond=0)
                     
                     # Comparer la date et l'heure, mais ignorer les secondes pour une comparaison plus générale
                     if time_obj.date() == now.date() and time_obj.hour == now.hour and time_obj.minute == now.minute:
                         print(f"Événement {event_id} déclenché à {time_str}")
                         queue.put(event_id)
+
+                    queue.put({'type': 'sleep'})
 
 
 
