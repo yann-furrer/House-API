@@ -17,7 +17,7 @@ if chemin_bdd not in sys.path:
 from bdd_connector import conn, cur
 from bdd_read_resquest import BDDReadRequest
 from bdd_write_resquest import BDDWriteRequest
-
+import queue
 #Creation of class BDDWriteRequest
 bbd_read_request = BDDReadRequest(conn, cur)
 bbd_write_request = BDDWriteRequest(conn, cur)
@@ -28,15 +28,19 @@ from websocket_management import server_message_event_to_specific_client, close_
 
 
 # le consommateur gérè l'ensemble des evenements sauf le depart et la planning
-async def consumer_handler(queue: asyncio.Queue, client_webscocket=None):
+def consumer_handler(queue_event: queue.Queue, client_webscocket=None):
     print("consumer_handler -------->>>>>")
     while True:
      
         # Attendez un élément de la queue
-        message = await queue.get()
+        message = queue_event.get()
         print("message consummer: ", message)
 
         match message:
+            case {'type': 'first_connection'}:
+                print("message['type'] == 'first_connection'")
+                bbd_write_request.isConnectedMscrapperDevice(message['model_id'], True)
+
             case {'type': 'ready'}:
                 print("message['type'] == 'ready'")
                 bbd_write_request.isConnectedMscrapperDevice(message['model_id'], True)
@@ -75,15 +79,15 @@ async def consumer_handler(queue: asyncio.Queue, client_webscocket=None):
  
         # Traitez le message ici
         print(f"Message consommé : {message}")
-        queue.task_done()
+        queue_event.task_done()
 
 
-async def producer_handler(message, queue: asyncio.Queue):
+async def producer_handler(message, queue_event: queue.Queue):
         
         #Ajout des ordres dans la queue
         print(json.loads(message))
         try : 
-            await queue.put(json.loads(message))
+            await queue_event.put(json.loads(message))
 
         except Exception:
             print("Error dans le producer_handler json error")

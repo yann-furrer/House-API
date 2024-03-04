@@ -8,13 +8,6 @@ import os
 import sys
 
 
-
-
-# Ajouter le chemin du dossier bdd
-# chemin_bdd = os.path.join(os.path.dirname(__file__), 'bdd')
-# if chemin_bdd not in sys.path:
-#     sys.path.append(chemin_bdd)
-
 # Ajoute le répertoire parent au sys.path pour permettre les importations depuis d'autres sous-répertoires
 chemin_du_repertoire_parent = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 if chemin_du_repertoire_parent not in sys.path:
@@ -49,12 +42,13 @@ def clear_data_if_week_changed():
 
 
 def assign_scrapers():
+    print("__assign scrapper__")
     #print(clear_data_if_week_changed())
    #if( clear_data_if_week_changed()):
     #exemple of data device_connected_list [('test', False), ('postman', False)]
     try :
         scrapers = list([item[0] for item in bdd_read_request.CheckMscrapperDevice()]) 
-        print("assign scrapper",scrapers)
+        #print("assign scrapper",scrapers)
 
         scraper_cycle = cycle(scrapers)
         
@@ -69,7 +63,7 @@ def assign_scrapers():
         for city_id in cities:
             scraper_id = next(scraper_cycle)
             updates.append((scraper_id, city_id[0]))
-
+        #print(updates, "updates")
         bdd_write_request.UpdateScrapperPlanning(updates)
         # Retiurne la liste des scrappers pour établir le planning
         return scrapers
@@ -94,7 +88,7 @@ def radom_schedule_handle(ids:str, nb_time:int):
             horaires.append(horaire.strftime("%Y-%m-%d %H:%M:%S"))
         horaires_par_id[id] = horaires
     return horaires_par_id
-print(radom_schedule_handle(["pc-1", "postman", "phone-2"], 5))
+# print(radom_schedule_handle(["pc-1", "postman", "phone-2"], 5))
 def random_break():
  #défini un temps de pause aléatoire en seoconde
   return random.randint(5, 10)

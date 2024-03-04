@@ -14,13 +14,15 @@ class BDDReadRequest:
 
     # return in json all id of scrapper devices and if is connected or not
     def CheckMscrapperDevice(self):
-        try :
-            self.cursor.execute(f"SELECT model_id, is_connected FROM monitoring.scrapper_device ;")
+      #  try :
+            print("passe dans la requete")
+            self.cursor.execute(f"SELECT model_id, is_connected FROM monitoring.scrapper_device;")
            # print(self.cursor.fetchall()[ø])
+            #print(json.dumps(self.cursor.fetchall()))
             return self.cursor.fetchall()
-        except Exception as e:
-            print(e)
-            print("Error in SELECT ChecKMScrapperDevice")
+        # except Exception as e:
+        #     print(e)
+        #     print("Error in SELECT ChecKMScrapperDevice")
 
         
     

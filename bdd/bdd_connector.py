@@ -36,3 +36,5 @@ try:
 
 except psycopg2.Error as e:
     print(f"Unable to connect to the database: {e}")
+
+

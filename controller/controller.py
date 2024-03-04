@@ -20,10 +20,6 @@ from controller.thread_controller import periodical_thread, assign_scrapers, eve
 
 # bbd_read_request = BDDReadRequest(conn, cur)
 
-#contient le planning des scrappers
-device_planning = {}
-#contient la liste des devices connectés
-connected_list  = []
 
 
 def controller_e(queue: asyncio.Queue):
