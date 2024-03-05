@@ -17,21 +17,21 @@ async def close_connection_to_specific_client(id, clients):
     del clients[id]
 
 
-async def server_message_event_to_specific_client(id, clients):
+async def send_message_to_specific_client(id : str, clients, json_message :json):
     client_id = clients[id]
-    event_data = {
-            'type': 'emit',
-            'time': datetime.datetime.utcnow().isoformat(),
-            'phase': 'launch'
-            'url' 'url',
-            'xpath_sequence': ["séquence une xppath", "séquence deux xpath", "séquence trois xpath"],
-            'data': 'data is comming!',
-            'device_id' : id,
-            'city': 'city',
-            'price_limit': 'price_limit',
-            'ban words' : 'ban words'
-        }
-        
+    # event_data = {
+    #         'type': 'emit',
+    #         'time': datetime.datetime.utcnow().isoformat(),
+    #         'phase': 'launch'
+    #         'url' 'url',
+    #         'xpath_sequence': ["séquence une xppath", "séquence deux xpath", "séquence trois xpath"],
+    #         'data': 'data is comming!',
+    #         'device_id' : id,
+    #         'city': 'city',
+    #         'price_limit': 'price_limit',
+    #         'ban words' : 'ban words'
+    #     }
+    event_data ={}
         # Convert the event data to a JSON string to send
     event_message = json.dumps(event_data)
 

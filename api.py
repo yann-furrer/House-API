@@ -40,9 +40,9 @@ async def handle_message(websocket, path):
                 #     await websocket.close()
                 #     break
                 # else:
-                print("queue : ", queue_event.qsize())
+                #print("queue : ", queue_event.qsize())
                 await websocket.send(f"Message reçu : {message}")
-               # await producer_handler(message, queue_event)
+                await producer_handler(message, queue_event)
     except websockets.exceptions.ConnectionClosed as e:
             print(e)
             print("La connexion a été fermée par le client.")

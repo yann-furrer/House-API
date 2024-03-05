@@ -4,6 +4,7 @@ from datetime import datetime
 from controller.controller_management import *
 import asyncio
 import queue
+import uuid
 #remplacer par une varibale vide
 connected_list  = []
 device_planning = {}
@@ -33,7 +34,7 @@ def periodical_thread(connected_list : list, device_planning : object, queue_eve
             #print(device_planning, "device_planning")
 
             device_planning = assign_scrapers()
-
+            print(device_planning)
             #print(device_planning, "device_planning2")
             connected_list = requested_device_list
     
@@ -41,7 +42,16 @@ def periodical_thread(connected_list : list, device_planning : object, queue_eve
         time.sleep(10)
 
 
-
+    #         'type': 'emit',
+    #         'time': datetime.datetime.utcnow().isoformat(),
+    #         'phase': 'launch'
+    #         'url' 'url',
+    #         'xpath_sequence': ["séquence une xppath", "séquence deux xpath", "séquence trois xpath"],
+    #         'data': 'data is comming!',
+    #         'device_id' : id,
+    #         'city': 'city',
+    #         'price_limit': 'price_limit',
+    #         'ban words' : 'ban words'
 def event_trigger(device_planning : object, queue_event: queue.Queue):
         print("__event_trigger__")
         while True:  # Boucle infinie pour vérifier continuellement
@@ -54,8 +64,17 @@ def event_trigger(device_planning : object, queue_event: queue.Queue):
                     if time_obj.date() == now.date() and time_obj.hour == now.hour and time_obj.minute == now.minute:
                         print(f"Événement {event_id} déclenché à {time_str}")
                         queue_event.put(event_id)
+                        print('event id in event trigger',event_id)
 
-                    queue_event.put({'type': 'sleep'})
+                        #get city name in tuple  
+                        random_city = bdd_read_request.GetRandomCity(event_id)[0][1]
+                        xpath_array = bdd_read_request.GetXpath()
+                        xpath_array = [item[0] for item in xpath_array]
+                        print(xpath_array)
+                        # génère un identifiant unique lié à la tache de scrapping 
+                        task_id = uuid.uuid4()
+                        url =  bdd_read_request.GetUrl()[0]
+                        queue_event.put({'type': 'start_scrapping', 'url'  : url+'+'+random_city, 'task_id': task_id, 'xpath_sequence': xpath_array, 'city': random_city ,'price_limit': 300, 'ban words' : ['bitcoin']})
 
 
 

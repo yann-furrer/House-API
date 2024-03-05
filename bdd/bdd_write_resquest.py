@@ -10,10 +10,10 @@ class BDDWriteRequest:
 
 
     #request monitoring.scrapper_log
-    def MscrapperLog(self, add_date, model_id, success, nb_data, website):
+    def MscrapperLog(self, model_id, type, success, task_id, website):
         try :
-            self.cursor.execute(f"INSERT INTO monitoring.scrapper_log (add_date, model_id, success, nb_data, website) VALUES ({add_date}, {model_id}, {success}, {nb_data}, {website});")
-            conn.commit()
+            self.cursor.execute(f"INSERT INTO monitoring.scrapper_log (add_date, model_id, type,  success, task_id , website) VALUES (CURRENT_TIMESTAMP, {model_id}, {model_id}, {success}, {task_id}, {website} );")
+            self.conn.commit()
             return True
         except Exception as e:
             print(e)
@@ -22,11 +22,11 @@ class BDDWriteRequest:
 
 
     #request monitoring.scrapper_device
-    def AddMscrapperDevice(self, add_date, model_id, is_connected=False ):
+    def AddMscrapperDevice(self, model_id, is_connected=False ):
         #ajouter un check
         try:
-            self.cursor.execute(f"INSERT INTO monitoring.scrapper_device (add_date, model_id, is_connected) VALUES ({add_date}, '{model_id}', {is_connected});")
-            conn.commit()
+            self.cursor.execute(f"INSERT INTO monitoring.scrapper_device (add_date, model_id, is_connected) VALUES (CURRENT_TIMESTAMP, '{model_id}', {is_connected});")
+            self.conn.commit()
         except Exception as e:
             print(e)
             print("Error in INSERT MscrapperLog")

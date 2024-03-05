@@ -5,6 +5,7 @@ import json
 import time
 import sys
 import os
+import random
 
 
 
@@ -19,49 +20,83 @@ from bdd_read_resquest import BDDReadRequest
 from bdd_write_resquest import BDDWriteRequest
 import queue
 #Creation of class BDDWriteRequest
-bbd_read_request = BDDReadRequest(conn, cur)
-bbd_write_request = BDDWriteRequest(conn, cur)
+bdd_read_request = BDDReadRequest(conn, cur)
+bdd_write_request = BDDWriteRequest(conn, cur)
 
 
 # Import des fonctions de réponse websocket 
-from websocket_management import server_message_event_to_specific_client, close_connection_to_specific_client
+from websocket_management import send_message_to_specific_client, close_connection_to_specific_client
+
+
+
 
 
 # le consommateur gérè l'ensemble des evenements sauf le depart et la planning
-def consumer_handler(queue_event: queue.Queue, client_webscocket=None):
+def consumer_handler(queue_event: queue.Queue, clients: object):
+
+
+#ajouter un générateur de task id
+
     print("consumer_handler -------->>>>>")
     while True:
      
         # Attendez un élément de la queue
         message = queue_event.get()
+        
         print("message consummer: ", message)
 
         match message:
+            # First connection
             case {'type': 'first_connection'}:
-                print("message['type'] == 'first_connection'")
-                bbd_write_request.isConnectedMscrapperDevice(message['model_id'], True)
+                try :
+                    print("message['type'] == 'first_connection'")
+
+                    bdd_write_request.AddMscrapperDevice(message['model_id'], True)
+                    json_message = json.dumps({'type': 'first_connection', 'device_id': message['device_id'], 'date': time.time(), 'state': '200', 'info': "first connection event succed", "task_id" :  message['task_id']})
+                    send_message_to_specific_client(message['device_id'], clients,json_message)
+                    #Ajout de l'evenement dans les logs
+                    bdd_write_request.MscrapperLog( message['model_id'], "first_connection" ,200 ,message["task_id"])
+                except Exception as error:
+
+                    
+                    send_message_to_specific_client(message['device_id'], clients,json.dumps({'type': 'first_connection', 'device_id': message['device_id'], 'date': time.time(), 'state': '400', 'info': error, "task_id" :  message['task_id']}))
+                    #Ajout de l'evenement dans les logs
+                    bdd_write_request.MscrapperLog( message['model_id'], "first_connection" ,200 ,message["task_id"])
+                    print("Error dans le consumer_handler")
+
+
 
             case {'type': 'ready'}:
                 print("message['type'] == 'ready'")
-                bbd_write_request.isConnectedMscrapperDevice(message['model_id'], True)
+                bdd_write_request.isConnectedMscrapperDevice(message['model_id'], True)
+                send_message_to_specific_client(message['device_id'], clients,json.dumps({'type': 'ready', 'device_id': message['device_id'], 'date': time.time(), 'state': '200', 'info': error, "task_id" :  message['task_id']}))
 
             case {'type': 'scrapping_data'}:   
-                  print()
+                  print("message['type'] == 'scrapping_data'")
                  # bbd_write_request.MscrapperLog(message['model_id'], "ready")
-            case {'type': 'break'}:
-
-                print("message['type'] == 'break'")
+            
             case {'type': 'disconnect'}:
-                close_connection_to_specific_client(message['device_id'], client_webscocket)
+                close_connection_to_specific_client(message['device_id'], clients)
 
 
             case {'type': 'start_scrapping'}:
                 print("message['type'] == 'start_scrapping'")
+                json_message = {'type', 'start_scrapping'}
+            
+    #         
 
 
+
+                
+                print(message)
+
+            # Pause dans le processsus entre 1 et 5 minutes
             case {'type': 'sleep'}:
 
-                print("message['type'] == 'disconnect'")
+                sleep_time = random.randint(5, 300)
+                send_message_to_specific_client(message['device_id'], clients,json.dumps({'type': 'sleep', 'device_id': message['device_id'], 'date': time.time(), 'state': '200', 'info': sleep_time, "task_id" :  message['task_id']}))
+                #Ajout de l'evenement dans les logs
+                bdd_write_request.MscrapperLog( message['model_id'], "sleep" ,200 ,message["task_id"])
             case _:
                 print("message['type'] == 'error'")
 
@@ -86,10 +121,10 @@ async def producer_handler(message, queue_event: queue.Queue):
         
         #Ajout des ordres dans la queue
         print(json.loads(message))
-        try : 
-            await queue_event.put(json.loads(message))
+       # try : 
+        queue_event.put(json.loads(message))
 
-        except Exception:
-            print("Error dans le producer_handler json error")
+       # except Exception:
+       #     print("Error dans le producer_handler json error")
         
        
