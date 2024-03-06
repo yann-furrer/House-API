@@ -16,7 +16,6 @@ async def close_connection_to_specific_client(id, clients):
     await client_websocket.close()
     del clients[id]
 
-
 async def send_message_to_specific_client(id : str, clients, json_message :json):
     client_id = clients[id]
     # event_data = {
@@ -33,7 +32,7 @@ async def send_message_to_specific_client(id : str, clients, json_message :json)
     #     }
     event_data ={}
         # Convert the event data to a JSON string to send
-    event_message = json.dumps(event_data)
+    event_message = json.dumps(json_message)
 
     # dans ce cas client_id est un websocket
-    await client_id.send(event_message)
+    await client_id.send(json_message)

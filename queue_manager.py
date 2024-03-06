@@ -32,16 +32,16 @@ from websocket_management import send_message_to_specific_client, close_connecti
 
 
 # le consommateur gérè l'ensemble des evenements sauf le depart et la planning
-def consumer_handler(queue_event: queue.Queue, clients: object):
+async def consumer_handler(queue_event: asyncio.Queue, clients: object):
 
 
 #ajouter un générateur de task id
 
-    print("consumer_handler -------->>>>>")
+    print("__controller ok__")
     while True:
      
         # Attendez un élément de la queue
-        message = queue_event.get()
+        message = await queue_event.get()
         
         print("message consummer: ", message)
 
@@ -53,13 +53,13 @@ def consumer_handler(queue_event: queue.Queue, clients: object):
 
                     bdd_write_request.AddMscrapperDevice(message['model_id'], True)
                     json_message = json.dumps({'type': 'first_connection', 'device_id': message['device_id'], 'date': time.time(), 'state': '200', 'info': "first connection event succed", "task_id" :  message['task_id']})
-                    send_message_to_specific_client(message['device_id'], clients,json_message)
+                    await send_message_to_specific_client(message['device_id'], clients,json_message)
                     #Ajout de l'evenement dans les logs
                     bdd_write_request.MscrapperLog( message['model_id'], "first_connection" ,200 ,message["task_id"])
                 except Exception as error:
 
                     
-                    send_message_to_specific_client(message['device_id'], clients,json.dumps({'type': 'first_connection', 'device_id': message['device_id'], 'date': time.time(), 'state': '400', 'info': error, "task_id" :  message['task_id']}))
+                    await send_message_to_specific_client(message['device_id'], clients,json.dumps({'type': 'first_connection', 'device_id': message['device_id'], 'date': time.time(), 'state': '400', 'info': error, "task_id" :  message['task_id']}))
                     #Ajout de l'evenement dans les logs
                     bdd_write_request.MscrapperLog( message['model_id'], "first_connection" ,200 ,message["task_id"])
                     print("Error dans le consumer_handler")
@@ -82,6 +82,11 @@ def consumer_handler(queue_event: queue.Queue, clients: object):
             case {'type': 'start_scrapping'}:
                 print("message['type'] == 'start_scrapping'")
                 json_message = {'type', 'start_scrapping'}
+
+            case {'type': 'test'}:
+                print("message['type'] == 'test'")
+                json_message = {'type', 'start_scrapping'}
+                await send_message_to_specific_client(message['device_id'], clients,json.dumps({'type': 'test', 'device_id': message['device_id'], 'date': time.time(), 'state': '200', 'info': 'test ok succes'}))
             
     #         
 
@@ -117,12 +122,12 @@ def consumer_handler(queue_event: queue.Queue, clients: object):
         queue_event.task_done()
 
 
-async def producer_handler(message, queue_event: queue.Queue):
+async def producer_handler(message, queue_event: asyncio.Queue):
         
         #Ajout des ordres dans la queue
         print(json.loads(message))
        # try : 
-        queue_event.put(json.loads(message))
+        await queue_event.put(json.loads(message))
 
        # except Exception:
        #     print("Error dans le producer_handler json error")

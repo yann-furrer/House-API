@@ -3,24 +3,24 @@ import time
 from datetime import datetime
 from controller.controller_management import *
 import asyncio
-import queue
+
 import uuid
 #remplacer par une varibale vide
 connected_list  = []
 device_planning = {}
 
 
-def event_trigger_testing(device_planning : object, queue_event: queue.Queue):
+async def event_trigger_testing(device_planning : object, queue_event: asyncio.Queue):
     print("__event_trigger__testing")
     event_id = "ceci est un test" 
     time_str = "2021-10-10 10:10:10"      
     print(f"Événement {event_id} déclenché à {time_str}")
-    queue_event.put(event_id)
-    queue_event.put({'type': 'sleep'})
+    await queue_event.put(event_id)
+    await queue_event.put({'type': 'sleep'})
 
 # compare every x second list of connected device in locally and in the bdd
 # if the list is different, update monitoring.city_scrapping to assign the new connected device
-def periodical_thread(connected_list : list, device_planning : object, queue_event: queue.Queue):
+async def periodical_thread(connected_list : list, device_planning : object, queue_event: asyncio.Queue):
     print("__periodical_thread__")
     #ajouter un eveneement pour envoyer aux autre tel si ils sont connecté
     while True:
@@ -39,7 +39,7 @@ def periodical_thread(connected_list : list, device_planning : object, queue_eve
             connected_list = requested_device_list
     
         print("Fonction périodique exécutée")
-        time.sleep(10)
+        await asyncio.sleep(10)
 
 
     #         'type': 'emit',
@@ -52,7 +52,7 @@ def periodical_thread(connected_list : list, device_planning : object, queue_eve
     #         'city': 'city',
     #         'price_limit': 'price_limit',
     #         'ban words' : 'ban words'
-def event_trigger(device_planning : object, queue_event: queue.Queue):
+async def event_trigger(device_planning : object, queue_event: asyncio.Queue):
         print("__event_trigger__")
         while True:  # Boucle infinie pour vérifier continuellement
             now = datetime.now()
