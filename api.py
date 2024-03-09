@@ -1,7 +1,7 @@
 
 import asyncio
 import websockets
-
+import json
 from urllib.parse import urlparse, parse_qs
 from handle_error import IsId
 #import hupper
@@ -9,7 +9,7 @@ from handle_error import IsId
 
 from queue_manager import consumer_handler, producer_handler
 from controller.thread_controller import periodical_thread, connected_list, device_planning
-
+from teste.wesbsocket_test_queue import test_request
 
 
 clients = {}  # Dictionnaire pour stocker les connexions client
@@ -41,8 +41,17 @@ async def handle_message(websocket, path):
                 # else:
                 #print("queue : ", queue_event.qsize())
                 await websocket.send(f"Message reçu : {message}")
-                await producer_handler(message, queue_event)
-    except websockets.exceptions.ConnectionClosed as e:
+                try : 
+                    print("message", message)
+                    d= json.loads(message)
+                    d["type"]
+                    d["device_id"]
+                    await producer_handler(message, queue_event)
+                
+
+                except Exception as e:
+                      await websocket.send(f"Errro canot parse this message to json : {message}")
+    except websockets.exceptions.connexionClosed as e:
             print(e)
             print("La connexion a été fermée par le client.")
     
@@ -62,11 +71,14 @@ async def launch():
     
     consummer = asyncio.create_task(consumer_handler(queue_event, clients))
     device_listener = asyncio.create_task(periodical_thread(connected_list, device_planning, queue_event))
-
+    test = asyncio.create_task(test_request(queue_event))
     print("Démarrage du module de queue")
     await asyncio.gather(consummer, device_listener)
     print("Serveur démarré à ws://localhost:8765\n")
     await serveur_ws.wait_closed()
+
+  
+   
 
 
 

@@ -10,7 +10,7 @@ import json
 
 
 
-async def close_connection_to_specific_client(id, clients):
+async def close_connexion_to_specific_client(id, clients):
     client_websocket = clients[id]
     await client_websocket.send(f"Fermeture de la connexion du client ${id}")
     await client_websocket.close()

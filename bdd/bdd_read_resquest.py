@@ -11,18 +11,30 @@ class BDDReadRequest:
         self.connexion = conn
         self.cursor = cur
 
+    # return if scraper is in the database
+    def CheckMscrapperOneDevice(self, model_id: str):
+        try :
+            print("passe dans la requete")
+            self.cursor.execute(f"SELECT model_id FROM monitoring.scrapper_device WHERE model_id ='{model_id}';")
+            #return false si la requete est vide
+            return True if self.cursor.fetchall() else False
+        except Exception as e:
+             print(e)
+             print("Error in SELECT CheckMscrapperOneDevice")
+
+
 
     # return in json all id of scrapper devices and if is connected or not
     def CheckMscrapperDevice(self):
-      #  try :
+        try :
             print("passe dans la requete")
             self.cursor.execute(f"SELECT model_id, is_connected FROM monitoring.scrapper_device;")
            # print(self.cursor.fetchall()[ø])
             #print(json.dumps(self.cursor.fetchall()))
             return self.cursor.fetchall()
-        # except Exception as e:
-        #     print(e)
-        #     print("Error in SELECT ChecKMScrapperDevice")
+        except Exception as e:
+             print(e)
+             print("Error in SELECT ChecKMScrapperDevice")
 
         
     
@@ -132,6 +144,5 @@ class BDDReadRequest:
         except Exception as e:
            print(e)
            print("Error in SELECT GetUrl")
-
 
 

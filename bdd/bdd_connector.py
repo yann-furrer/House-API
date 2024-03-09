@@ -4,13 +4,13 @@ from dotenv import load_dotenv
 load_dotenv()
 
 
-# Define your connection parameters
+# Define your connexion parameters
 dbname = os.getenv('DB')
 user = os.getenv('DBUSER')
 password = os.getenv('PASSWORD')
 host = os.getenv('HOST')
 port = os.getenv('PORT')
-# Create a connection to the database
+# Create a connexion to the database
 try:
     conn = psycopg2.connect(
         dbname=dbname,
@@ -30,7 +30,7 @@ try:
     # db_version = cur.fetchone()
     # print(db_version)
 
-    # # Close the cursor and connection
+    # # Close the cursor and connexion
     #cur.close()
     #conn.close()
 

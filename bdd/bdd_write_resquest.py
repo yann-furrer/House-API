@@ -10,37 +10,40 @@ class BDDWriteRequest:
 
 
     #request monitoring.scrapper_log
-    def MscrapperLog(self, model_id, type, success, task_id, website):
+    def MscrapperLog(self, model_id: str, type: str, success: bool, task_id: str, website: str):
         try :
-            self.cursor.execute(f"INSERT INTO monitoring.scrapper_log (add_date, model_id, type,  success, task_id , website) VALUES (CURRENT_TIMESTAMP, {model_id}, {model_id}, {success}, {task_id}, {website} );")
-            self.conn.commit()
+            self.cursor.execute(f"INSERT INTO monitoring.scrapper_log (add_date, model_id, type,  success, task_id , website) VALUES (CURRENT_TIMESTAMP, '{model_id}', '{type}', '{success}', '{task_id}', '{website}' );")
+            self.connexion.commit()
             return True
         except Exception as e:
             print(e)
             print("Error in INSERT MscrapperLog")
+            #self.connexion.rollback()
             return False
 
 
     #request monitoring.scrapper_device
-    def AddMscrapperDevice(self, model_id, is_connected=False ):
+    def AddMscrapperDevice(self, model_id : str, is_connected=False ):
         #ajouter un check
-        try:
+        #try:
             self.cursor.execute(f"INSERT INTO monitoring.scrapper_device (add_date, model_id, is_connected) VALUES (CURRENT_TIMESTAMP, '{model_id}', {is_connected});")
-            self.conn.commit()
-        except Exception as e:
-            print(e)
-            print("Error in INSERT MscrapperLog")
+            self.connexion.commit()
+       # except Exception as e:
+        #    print(e)
+         #   print("Error in INSERT AddMscrapperDevice")
 
 
     # modify a state of is connected on monitoring.scrapper_device
-    def isConnectedMscrapperDevice(self, model_id, is_connected=False ):
+    def isConnectedMscrapperDevice(self, model_id: str, is_connected=False ):
         #ajouter un check
         try:
-            self.cursor.execute(f"UPDATE monitoring.scrapper_device SET add_date = CURRENT_TIMESTAMP, is_connected = {is_connected} WHERE model_id = '{model_id}';;")
+            self.cursor.execute(f"UPDATE monitoring.scrapper_device SET add_date = CURRENT_TIMESTAMP, is_connected = {is_connected} WHERE model_id = '{model_id}';")
             conn.commit()
+            return True
         except Exception as e:
             print(e)
             print("Error in INSERT isConnectedMscrapperDevice")
+            return False
 
 
     # modify state and to an specific city
@@ -69,3 +72,7 @@ class BDDWriteRequest:
         # except Exception as e:
         #     print(e)
         #     print("Error in UPDATE UpdateScrapperPlanning")
+
+
+# test = BDDWriteRequest(conn, cur)
+# test.MscrapperLog("test", "scrapping_data" ,True ,"NULL", "NULL")

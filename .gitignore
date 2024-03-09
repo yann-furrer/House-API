@@ -16,3 +16,4 @@ api_test.py
 bdd/__init__.py
 controller/__init__.py
 t.py
+queue_manager_old.py
